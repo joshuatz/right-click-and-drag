@@ -1,4 +1,5 @@
 #Persistent
+#MaxThreadsPerHotkey, 2 ; Allow two threads for same hotkey so right click can be used as both start and (early) stop
 CoordMode, mouse, Screen ; Coordinates are relative to the desktop (entire screen)
 ; Gui, MainWin:New
 Gui, +AlwaysOnTop +Resize -MaximizeBox +MinSize +MaxSize640x640
