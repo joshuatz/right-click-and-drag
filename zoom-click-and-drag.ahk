@@ -88,20 +88,16 @@ RButton::
 	if (IsEnabled = 1) {
 		if (IsHolding = 0) {
 			OutputDebug, % "Intercepted right click - starting hold flow"
-			; MsgBox, "BLOCKED RIGHT BUTTON"
-			; Emit mouse down
+			; Start hold
 			IsHolding := 1
-			OutputDebug, % "Ln 93"
-			; Click, Down
-			Send {LButton Down}
-			OutputDebug, % "Ln 95"
-			; store initial mouse position
 			OutputDebug, % "Getting initial mouse position"
 			MouseGetPos, MouseLastX, MouseLastY
 			; There is no "mouse move" hotkey, so we have to start a timer to listen
 			OutputDebug, % "Initializing Timer"
 			SetTimer, checkMouseMove, % MouseCheckMs
 			OutputDebug, % "Started hold and timer"
+			; This lines HAS to come last, or else it hangs thread without starting timer!!!
+			Click, Down
 			Return
 		} else {
 			; Treat as "panic" and cancel
