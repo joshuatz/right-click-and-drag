@@ -1,5 +1,5 @@
 #Persistent
-#MaxThreadsPerHotkey 2
+CoordMode, mouse, Screen ; Coordinates are relative to the desktop (entire screen)
 ; Gui, MainWin:New
 Gui, +AlwaysOnTop +Resize -MaximizeBox +MinSize +MaxSize640x640
 Gui, Add, Checkbox, vIsEnabled, Enabled?
@@ -7,9 +7,10 @@ Gui, Show, W300 H150
 Gui, Submit, NoHide
 
 ; Adjustabled vars
-MinMouseMove := 20 ; Minimum px of movement to consider the mouse to have moved. Setting the value higher means that it is easier to stop the drag operation with erratic mouse movement. Keep low to avoid accidental early ends of drag.
-MouseCheckMs := 50 ; How often to check mouse movement when running loop
-MinStableMouseToStopDragMs := 1200 ; How long the mouse has to be left in one spot for it to be interpreted as the user ending the drag operation
+MinMouseMove := 2 ; Minimum px of movement to consider the mouse to have moved. Setting the value higher means that it is easier to stop the drag operation with erratic mouse movement. Keep low to avoid accidental early ends of drag.
+MouseCheckMs := 200 ; How often to check mouse movement when running loop. Balanced with MinMouseMove. Don't make too large, or it could miss circular movement, where mouse actually traveled a bunch, but returned to same spot at each check.
+MinStableMouseToStopDragMs := 2000 ; How long the mouse has to be left in one spot for it to be interpreted as the user ending the drag operation
+RemoteControlLagMs := 500 ; Lag time before starting check for mouse movement, to give time for lag between host and remote, for user to notice drag is now on
 
 ; Some global variables
 IsHolding := 0
@@ -53,8 +54,8 @@ endHold() {
 
 checkMouseMove() {
 	global
-	OutputDebug, % "Checking mouse pos"
-	MouseGetPos, MouseX, MouseY
+	MouseGetPos, MouseX, MouseY, , ,1
+	; OutputDebug, % "Mouse at " . MouseX . ", " . MouseY . " || Old = " . MouseLastX . ", " . MouseLastY
 
 	; First, check to see if checkbox changed. If so, we can just cancel early
 	getIsEnabled()
@@ -94,6 +95,8 @@ RButton::
 			MouseGetPos, MouseLastX, MouseLastY
 			; There is no "mouse move" hotkey, so we have to start a timer to listen
 			OutputDebug, % "Initializing Timer"
+			; Add delay, to account for remote control lag
+			Sleep, % RemoteControlLagMs
 			SetTimer, checkMouseMove, % MouseCheckMs
 			OutputDebug, % "Started hold and timer"
 			; This lines HAS to come last, or else it hangs thread without starting timer!!!
