@@ -52,6 +52,28 @@ endHold() {
 	resetVars()
 }
 
+/**
+* Based on
+* - https://www.autohotkey.com/boards/viewtopic.php?t=29802
+* - https://autohotkey.com/board/topic/73582-draw-a-cirle-around-last-mouse-click-location/
+*/
+highlightMouse(Radius:=50, Temp:=1, DurationMs:=100) {
+	Diameter := 2 * Radius
+	Gui, MouseHighlightLayer:New, +AlwaysOnTop -Caption +LastFound +Owner
+	Gui, MouseHighlightLayer:Color, Red
+	; Makes highlight layer take up entire screen, but hidden
+	Gui, MouseHighlightLayer:Show, Hide x0 y0 w%A_ScreenWidth% h%A_ScreenHeight%
+	WinSet, Transparent, 64
+	MouseGetPos, x, y
+	x -= Radius, y -= Radius
+	WinSet, Region, E %x%-%y% w%Diameter% h%Diameter%
+	Gui, MouseHighlightLayer:Show
+	if (Temp) {
+		Sleep, % DurationMs
+		Gui, MouseHighlightLayer:Hide
+	}
+}
+
 checkMouseMove() {
 	global
 	MouseGetPos, MouseX, MouseY, , ,1
@@ -95,6 +117,8 @@ RButton::
 			MouseGetPos, MouseLastX, MouseLastY
 			; There is no "mouse move" hotkey, so we have to start a timer to listen
 			OutputDebug, % "Initializing Timer"
+			; Show visual cue to user that drag is now enabled - make very large and long to account for lag
+			highlightMouse(300, 1, 2000)
 			; Add delay, to account for remote control lag
 			Sleep, % RemoteControlLagMs
 			SetTimer, checkMouseMove, % MouseCheckMs
@@ -130,3 +154,8 @@ $^!p::
 	; alert
 	OutputDebug, "PANIC combo pressed! Stopped override."
 	Return
+
+; Testing
+^![::
+	OutputDebug, % "Running highlightMouse() on demand."
+	highlightMouse()
