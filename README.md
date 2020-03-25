@@ -1,4 +1,6 @@
 # Right Click and Drag
+![GitHub](https://img.shields.io/github/license/joshuatz/right-click-and-drag) ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/joshuatz/right-click-and-drag)
+
 ## Download
 Runs as a portable EXE, no installation required. Only Windows support (built with [AutoHotkey](https://www.autohotkey.com/)).
 
