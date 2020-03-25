@@ -1,3 +1,8 @@
+/**
+* @author Joshua Tzucker
+* @file AHK script to use the right mouse button to start a click and drag operation. Useful for certain remote control / VNC clients that release mouse buttons on mouse movement (e.g. from touch screen clients).
+*/
+
 #Persistent
 #MaxThreadsPerHotkey, 2 ; Allow two threads for same hotkey so right click can be used as both start and (early) stop
 
@@ -132,7 +137,7 @@ checkMouseMove() {
 	MouseLastY := MouseY
 
 	; check if min has elapsed
-	if (MsSinceLastMove > MinStableMouseToStopDragMs) {
+	if (MsSinceLastMove >= MinStableMouseToStopDragMs) {
 		OutputDebug, % "Mouse left in same spot for " . MsSinceLastMove . ". Ending hold! :)"
 		endHold()
 	} else {
